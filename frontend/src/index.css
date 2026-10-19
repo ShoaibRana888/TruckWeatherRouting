@@ -65,8 +65,9 @@ input {
   min-height: 0;
 }
 
-.map,
-.map-missing {
+/* Higher specificity than mapbox-gl.css, whose `.mapboxgl-map { position: relative }` would collapse the map. */
+.map-panel .map,
+.map-panel .map-missing {
   position: absolute;
   inset: 0;
 }
@@ -477,14 +478,14 @@ input[aria-invalid='true'] {
 @media (max-width: 800px) {
   .app {
     grid-template-columns: 1fr;
-    grid-template-rows: 55vh 1fr;
+    grid-template-rows: 48vh 1fr;
     height: auto;
     min-height: 100dvh;
   }
 
   .map-panel {
     order: -1;
-    height: 55vh;
+    height: 48vh;
   }
 
   .sidebar {
@@ -493,6 +494,14 @@ input[aria-invalid='true'] {
   }
 
   .map-overlay {
-    bottom: 12px;
+    left: 8px;
+    right: 8px;
+    bottom: 24px;
+    width: auto;
+    padding: 0.5rem 0.65rem;
+  }
+
+  .forecast-slider {
+    margin-top: 0.35rem;
   }
 }

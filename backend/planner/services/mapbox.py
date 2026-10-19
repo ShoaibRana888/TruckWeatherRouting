@@ -14,8 +14,8 @@ from .errors import NotFoundError, UpstreamError
 
 logger = logging.getLogger(__name__)
 
-GEOCODE_URL = "https://api.mapbox.com/search/geocode/v6/forward"
-DIRECTIONS_URL = "https://api.mapbox.com/directions/v5/mapbox/driving/{coords}"
+GEOCODE_PATH = "/search/geocode/v6/forward"
+DIRECTIONS_PATH = "/directions/v5/mapbox/driving/{coords}"
 WANTED_ROUTES = 3
 DIRECTIONS_CACHE_TTL_S = 15 * 60
 DUPLICATE_OVERLAP = 0.9  # a route sharing this much of its path with another is the same route
@@ -67,7 +67,7 @@ def _get(url: str, params: dict) -> dict:
 
 def geocode(query: str, limit: int = 5) -> list[Place]:
     body = _get(
-        GEOCODE_URL,
+        settings.MAPBOX_API_URL + GEOCODE_PATH,
         {"q": query, "limit": limit, "autocomplete": "true", "country": "us", "language": "en"},
     )
     places = []
@@ -102,7 +102,7 @@ def _directions_request(origin: Coord, dest: Coord, exclude: str | None = None) 
     if exclude:
         params["exclude"] = exclude
     coords = f"{origin[0]:.6f},{origin[1]:.6f};{dest[0]:.6f},{dest[1]:.6f}"
-    body = _get(DIRECTIONS_URL.format(coords=coords), params)
+    body = _get(settings.MAPBOX_API_URL + DIRECTIONS_PATH.format(coords=coords), params)
     try:
         return [_parse_route(r) for r in body.get("routes", [])]
     except (KeyError, TypeError) as exc:

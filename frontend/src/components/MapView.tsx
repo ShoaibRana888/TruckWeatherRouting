@@ -136,8 +136,9 @@ export function MapView({ plan, selectedId, heatmap, hour, endpoints, onSelectRo
         source: 'heat',
         paint: {
           'heatmap-weight': heatWeightExpression(0),
-          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 3, 0.5, 9, 1.2],
-          'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 3, 14, 6, 45, 9, 110],
+          'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 3, 0.45, 9, 0.8],
+          // Roughly constant ground radius (wider than the 30 mi point spacing) so the field stays continuous.
+          'heatmap-radius': ['interpolate', ['exponential', 2], ['zoom'], 3, 14, 5, 30, 6, 60, 7, 115, 8, 220, 10, 800],
           'heatmap-color': HEAT_COLOR,
           'heatmap-opacity': 0.8,
         },
@@ -189,26 +190,29 @@ export function MapView({ plan, selectedId, heatmap, hour, endpoints, onSelectRo
           'circle-stroke-width': 2,
         },
       })
-      map.addLayer({
-        id: 'route-labels',
-        type: 'symbol',
-        source: 'labels',
-        layout: {
-          'text-field': ['get', 'label'],
-          'text-size': 12,
-          'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
-          'text-allow-overlap': true,
-          'text-offset': [
-            'case',
-            ['==', ['get', 'slot'], 0],
-            ['literal', [0, -1.6]],
-            ['==', ['get', 'slot'], 1],
-            ['literal', [0, 0]],
-            ['literal', [0, 1.6]],
-          ],
-        },
-        paint: { 'text-color': '#1f2933', 'text-halo-color': '#ffffff', 'text-halo-width': 2 },
-      })
+      // Text needs the style's glyphs; a custom style without them still gets the map, minus labels.
+      if (map.getStyle()?.glyphs) {
+        map.addLayer({
+          id: 'route-labels',
+          type: 'symbol',
+          source: 'labels',
+          layout: {
+            'text-field': ['get', 'label'],
+            'text-size': 12,
+            'text-font': ['DIN Pro Medium', 'Arial Unicode MS Regular'],
+            'text-allow-overlap': true,
+            'text-offset': [
+              'case',
+              ['==', ['get', 'slot'], 0],
+              ['literal', [0, -1.6]],
+              ['==', ['get', 'slot'], 1],
+              ['literal', [0, 0]],
+              ['literal', [0, 1.6]],
+            ],
+          },
+          paint: { 'text-color': '#1f2933', 'text-halo-color': '#ffffff', 'text-halo-width': 2 },
+        })
+      }
 
       const select = (event: mapboxgl.MapMouseEvent) => {
         const hit = map.queryRenderedFeatures(event.point, { layers: ['checkpoints-selected', 'checkpoints-other', 'routes-other'] })[0]

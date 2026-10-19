@@ -69,5 +69,6 @@ REST_FRAMEWORK = {
 }
 
 MAPBOX_TOKEN = os.environ.get("MAPBOX_TOKEN", "")
+MAPBOX_API_URL = os.environ.get("MAPBOX_API_URL", "https://api.mapbox.com").rstrip("/")
 OPEN_METEO_URL = os.environ.get("OPEN_METEO_URL", "https://api.open-meteo.com/v1/forecast")
 UPSTREAM_TIMEOUT_S = float(os.environ.get("UPSTREAM_TIMEOUT_S", "20"))
