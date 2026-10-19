@@ -1,5 +1,7 @@
 # Weather-Aware Truck Routing
 
+**Live app:** https://truck-weather-routing-x40x.onrender.com (hosted on Render's free plan, so the first request after idle can take up to a minute to wake the service)
+
 A React + Django web app that helps a truck driver pick the safest of three routes using **weather, load weight and travel time**.
 
 Enter an origin, destination, departure time and load weight. The app:
