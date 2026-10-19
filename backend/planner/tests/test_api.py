@@ -183,3 +183,21 @@ def test_config_exposes_only_public_tokens(settings):
     assert client.get("/api/config/").json()["mapbox_token"] == "pk.public-token"
     settings.MAPBOX_TOKEN = "sk.secret-token"
     assert client.get("/api/config/").json()["mapbox_token"] == ""
+
+
+def test_geocode_labels_places_with_region():
+    with responses.RequestsMock() as rsps:
+        rsps.add(
+            responses.GET,
+            re.compile(r"https://api\.mapbox\.com/search/geocode/v6/forward.*"),
+            json={
+                "features": [
+                    {
+                        "geometry": {"coordinates": [-96.79, 32.77]},
+                        "properties": {"name": "Dallas", "place_formatted": "Texas, United States"},
+                    }
+                ]
+            },
+        )
+        resp = client.get("/api/geocode/", {"q": "dallas"})
+    assert resp.json()["results"][0]["name"] == "Dallas, Texas, United States"

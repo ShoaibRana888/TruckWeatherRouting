@@ -74,8 +74,11 @@ def geocode(query: str, limit: int = 5) -> list[Place]:
     for feature in body.get("features", []):
         props = feature.get("properties", {})
         lon, lat = feature["geometry"]["coordinates"]
-        name = props.get("full_address") or props.get("name_preferred") or props.get("name") or query
-        places.append(Place(name=name, lon=lon, lat=lat))
+        # v6 only sets full_address for street addresses; places have name + place_formatted ("Texas, United States").
+        name = props.get("full_address") or ", ".join(
+            part for part in (props.get("name_preferred") or props.get("name"), props.get("place_formatted")) if part
+        )
+        places.append(Place(name=name or query, lon=lon, lat=lat))
     return places
 
 
