@@ -68,19 +68,16 @@ export function TripForm({ busy, onSubmit }: Props) {
           />
         </div>
       </div>
-      {!loadValid && <p className="hint error-text">Enter a whole number from 0 to {MAX_LOAD_LB.toLocaleString()} lb.</p>}
+      {!loadValid && (
+        <p className="hint error-text">Enter a whole number from 0 to {MAX_LOAD_LB.toLocaleString()} lb.</p>
+      )}
 
       <fieldset className="field">
         <legend>Weather checkpoint every</legend>
         <div className="segmented" role="radiogroup">
           {INTERVALS.map((miles) => (
             <label key={miles} className={interval === miles ? 'selected' : undefined}>
-              <input
-                type="radio"
-                name="interval"
-                checked={interval === miles}
-                onChange={() => setInterval(miles)}
-              />
+              <input type="radio" name="interval" checked={interval === miles} onChange={() => setInterval(miles)} />
               {miles} mi
             </label>
           ))}

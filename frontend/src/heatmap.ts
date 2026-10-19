@@ -1,6 +1,7 @@
 import type { ExpressionSpecification } from 'mapbox-gl'
 
 /** Heatmap weight for forecast hour `hour`: each point's risk level (0-4) mapped to intensity. */
+// prettier-ignore
 export const heatWeightExpression = (hour: number): ExpressionSpecification => [
   'interpolate',
   ['linear'],
@@ -12,6 +13,7 @@ export const heatWeightExpression = (hour: number): ExpressionSpecification => [
   4, 1,
 ]
 
+// prettier-ignore
 export const HEAT_COLOR: ExpressionSpecification = [
   'interpolate',
   ['linear'],

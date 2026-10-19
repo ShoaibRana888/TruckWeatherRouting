@@ -103,9 +103,7 @@ export function PlaceInput({ label, placeholder, value, onChange }: Props) {
         </ul>
       )}
       {failed && <p className="hint error-text">Address search is unavailable right now.</p>}
-      {!value && text.length > 0 && !open && !failed && (
-        <p className="hint">Pick a suggestion from the list.</p>
-      )}
+      {!value && text.length > 0 && !open && !failed && <p className="hint">Pick a suggestion from the list.</p>}
     </div>
   )
 }

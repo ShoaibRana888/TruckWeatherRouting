@@ -6,12 +6,11 @@ import { HEAT_COLOR, heatWeightExpression } from '../heatmap'
 import { levelColorExpression, RISK_COLORS } from '../risk'
 import type { Checkpoint, HeatmapResponse, Place, PlanResponse, Route } from '../types'
 
-const TOKEN = import.meta.env.VITE_MAPBOX_TOKEN as string | undefined
-const STYLE = (import.meta.env.VITE_MAP_STYLE as string | undefined) || 'mapbox://styles/mapbox/light-v11'
-
 type Expr = mapboxgl.ExpressionSpecification
 
 interface Props {
+  token: string
+  style: string
   plan: PlanResponse | null
   selectedId: string
   heatmap: HeatmapResponse | null
@@ -93,11 +92,12 @@ function popupContent(route: Route, cp: Checkpoint): HTMLElement {
     const list = add(root, 'ul', '')
     for (const reason of cp.reasons) add(list, 'li', reason)
   }
-  if (cp.forecast_clamped) add(root, 'p', 'ETA is outside the forecast window; using the nearest available hour.', 'muted')
+  if (cp.forecast_clamped)
+    add(root, 'p', 'ETA is outside the forecast window; using the nearest available hour.', 'muted')
   return root
 }
 
-export function MapView({ plan, selectedId, heatmap, hour, endpoints, onSelectRoute }: Props) {
+export function MapView({ token, style, plan, selectedId, heatmap, hour, endpoints, onSelectRoute }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<mapboxgl.Map | null>(null)
   const markersRef = useRef<mapboxgl.Marker[]>([])
@@ -112,11 +112,11 @@ export function MapView({ plan, selectedId, heatmap, hour, endpoints, onSelectRo
 
   // Create the map once and add all sources/layers up front; later updates only swap data.
   useEffect(() => {
-    if (!TOKEN || !containerRef.current) return
-    mapboxgl.accessToken = TOKEN
+    if (!token || !containerRef.current) return
+    mapboxgl.accessToken = token
     const map = new mapboxgl.Map({
       container: containerRef.current,
-      style: STYLE,
+      style,
       center: [-98.5, 39.5],
       zoom: 3.4,
       attributionControl: true,
@@ -215,7 +215,9 @@ export function MapView({ plan, selectedId, heatmap, hour, endpoints, onSelectRo
       }
 
       const select = (event: mapboxgl.MapMouseEvent) => {
-        const hit = map.queryRenderedFeatures(event.point, { layers: ['checkpoints-selected', 'checkpoints-other', 'routes-other'] })[0]
+        const hit = map.queryRenderedFeatures(event.point, {
+          layers: ['checkpoints-selected', 'checkpoints-other', 'routes-other'],
+        })[0]
         const routeId = hit?.properties?.routeId as string | undefined
         const current = planRef.current
         if (!hit || !routeId || !current) return
@@ -247,13 +249,14 @@ export function MapView({ plan, selectedId, heatmap, hour, endpoints, onSelectRo
       mapRef.current = null
       setReady(false)
     }
-  }, [])
+  }, [token, style])
 
   // Route data, checkpoints, labels and the viewport follow the plan.
   useEffect(() => {
     const map = mapRef.current
     if (!map || !ready) return
-    const set = (id: string, data: GeoJSON.FeatureCollection) => (map.getSource(id) as mapboxgl.GeoJSONSource).setData(data)
+    const set = (id: string, data: GeoJSON.FeatureCollection) =>
+      (map.getSource(id) as mapboxgl.GeoJSONSource).setData(data)
     set('routes', plan ? routeFeatures(plan) : EMPTY)
     set('checkpoints', plan ? checkpointFeatures(plan) : EMPTY)
     set('labels', plan ? labelFeatures(plan) : EMPTY)
@@ -303,11 +306,11 @@ export function MapView({ plan, selectedId, heatmap, hour, endpoints, onSelectRo
     pin(endpoints.destination, 'end', 'End')
   }, [endpoints, ready])
 
-  if (!TOKEN) {
+  if (!token) {
     return (
       <div className="map-missing" role="alert">
         <p>
-          The map needs a Mapbox public token. Set <code>VITE_MAPBOX_TOKEN</code> and rebuild the frontend.
+          The map needs a Mapbox public token. Set <code>MAPBOX_TOKEN</code> (a <code>pk.</code> token) on the server.
         </p>
       </div>
     )

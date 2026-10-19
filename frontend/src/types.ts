@@ -75,3 +75,8 @@ export interface HeatmapResponse {
   max_level: number
   points: GeoJSON.FeatureCollection<GeoJSON.Point, Record<`r${number}`, number>>
 }
+
+export interface AppConfig {
+  mapbox_token: string
+  map_style: string
+}

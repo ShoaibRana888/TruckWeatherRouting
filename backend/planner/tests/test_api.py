@@ -176,3 +176,10 @@ def test_geocode_proxy(monkeypatch):
 
 def test_geocode_short_query_skips_upstream():
     assert client.get("/api/geocode/", {"q": "d"}).json() == {"results": []}
+
+
+def test_config_exposes_only_public_tokens(settings):
+    settings.MAPBOX_TOKEN = "pk.public-token"
+    assert client.get("/api/config/").json()["mapbox_token"] == "pk.public-token"
+    settings.MAPBOX_TOKEN = "sk.secret-token"
+    assert client.get("/api/config/").json()["mapbox_token"] == ""

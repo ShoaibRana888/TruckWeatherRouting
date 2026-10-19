@@ -60,6 +60,14 @@ FRONTEND_DIST = Path(os.environ.get("FRONTEND_DIST", REPO_ROOT / "frontend" / "d
 WHITENOISE_ROOT = FRONTEND_DIST  # serves index.html and built assets from the site root
 WHITENOISE_INDEX_FILE = True
 
+
+def _immutable_file_test(path, url):
+    """Vite fingerprints everything under /assets/, so browsers may cache it forever."""
+    return url.startswith("/assets/")
+
+
+WHITENOISE_IMMUTABLE_FILE_TEST = _immutable_file_test
+
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "DEFAULT_PARSER_CLASSES": ["rest_framework.parsers.JSONParser"],
@@ -69,6 +77,7 @@ REST_FRAMEWORK = {
 }
 
 MAPBOX_TOKEN = os.environ.get("MAPBOX_TOKEN", "")
+MAP_STYLE = os.environ.get("MAP_STYLE", "mapbox://styles/mapbox/light-v11")
 MAPBOX_API_URL = os.environ.get("MAPBOX_API_URL", "https://api.mapbox.com").rstrip("/")
 OPEN_METEO_URL = os.environ.get("OPEN_METEO_URL", "https://api.open-meteo.com/v1/forecast")
 UPSTREAM_TIMEOUT_S = float(os.environ.get("UPSTREAM_TIMEOUT_S", "20"))

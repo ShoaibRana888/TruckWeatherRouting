@@ -1,4 +1,4 @@
-import type { HeatmapResponse, Place, PlanResponse, TripRequest } from './types'
+import type { AppConfig, HeatmapResponse, Place, PlanResponse, TripRequest } from './types'
 
 export class ApiError extends Error {
   readonly status: number
@@ -53,5 +53,9 @@ export async function geocode(query: string, signal?: AbortSignal): Promise<Plac
 
 export const planTrip = (trip: TripRequest, signal?: AbortSignal) => post<PlanResponse>('/api/plan/', trip, signal)
 
-export const fetchHeatmap = (trip: Pick<TripRequest, 'origin' | 'destination' | 'load_weight_lb'>, signal?: AbortSignal) =>
-  post<HeatmapResponse>('/api/heatmap/', trip, signal)
+export const fetchHeatmap = (
+  trip: Pick<TripRequest, 'origin' | 'destination' | 'load_weight_lb'>,
+  signal?: AbortSignal,
+) => post<HeatmapResponse>('/api/heatmap/', trip, signal)
+
+export const getConfig = () => request<AppConfig>('/api/config/', {})

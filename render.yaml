@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: truck-weather-routing
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health/
+    envVars:
+      - key: MAPBOX_TOKEN
+        sync: false # set in the Render dashboard; must be a public (pk.) token
+      - key: DJANGO_SECRET_KEY
+        generateValue: true

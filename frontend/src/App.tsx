@@ -1,11 +1,11 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
-import { ApiError, fetchHeatmap, planTrip } from './api'
+import { ApiError, fetchHeatmap, getConfig, planTrip } from './api'
 import { ForecastSlider } from './components/ForecastSlider'
 import { Legend } from './components/Legend'
 import { RouteList } from './components/RouteList'
 import { TripForm } from './components/TripForm'
 import { hourOffset } from './format'
-import type { HeatmapResponse, Place, PlanResponse, TripRequest } from './types'
+import type { AppConfig, HeatmapResponse, Place, PlanResponse, TripRequest } from './types'
 
 // mapbox-gl is large; load it after the form so the page is usable immediately.
 const MapView = lazy(() => import('./components/MapView').then((m) => ({ default: m.MapView })))
@@ -21,9 +21,17 @@ export default function App() {
   const [selectedId, setSelectedId] = useState('')
   const [hour, setHour] = useState(0)
   const [endpoints, setEndpoints] = useState<{ origin: Place; destination: Place } | null>(null)
+  const [config, setConfig] = useState<AppConfig | null>(null)
+  const [configFailed, setConfigFailed] = useState(false)
   const controller = useRef<AbortController | null>(null)
 
   useEffect(() => () => controller.current?.abort(), [])
+
+  useEffect(() => {
+    getConfig()
+      .then(setConfig)
+      .catch(() => setConfigFailed(true))
+  }, [])
 
   const submit = useCallback((trip: TripRequest, places: { origin: Place; destination: Place }) => {
     controller.current?.abort()
@@ -91,14 +99,22 @@ export default function App() {
 
       <main className="map-panel">
         <Suspense fallback={<div className="map-missing">Loading map…</div>}>
-          <MapView
-            plan={plan}
-            selectedId={selectedId}
-            heatmap={heatmap}
-            hour={hour}
-            endpoints={endpoints}
-            onSelectRoute={setSelectedId}
-          />
+          {config ? (
+            <MapView
+              token={config.mapbox_token}
+              style={config.map_style}
+              plan={plan}
+              selectedId={selectedId}
+              heatmap={heatmap}
+              hour={hour}
+              endpoints={endpoints}
+              onSelectRoute={setSelectedId}
+            />
+          ) : (
+            <div className="map-missing" role={configFailed ? 'alert' : 'status'}>
+              {configFailed ? 'Could not load map settings from the server.' : 'Loading map…'}
+            </div>
+          )}
         </Suspense>
         <div className="map-overlay">
           <Legend />
