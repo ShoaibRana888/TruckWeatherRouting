@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -11,7 +11,7 @@ from planner.domain.sampling import (
     simplify,
 )
 
-DEPART = datetime(2026, 10, 20, 8, 0, tzinfo=timezone.utc)
+DEPART = datetime(2026, 10, 20, 8, 0, tzinfo=UTC)
 
 
 def straight_route(miles=100.0, hours=2.0, n=101):

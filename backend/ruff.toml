@@ -1,0 +1,7 @@
+line-length = 120
+target-version = "py312"
+extend-exclude = ["migrations"]
+
+[lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["B905"]  # zip() without strict=: lengths are guaranteed equal by construction

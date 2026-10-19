@@ -10,8 +10,18 @@ def wx(wind=0.0, rain=0.0, snow=0.0):
 
 @pytest.mark.parametrize(
     "wind, expected",
-    [(0, L.LOW), (24.9, L.LOW), (25, L.MODERATE), (34.5, L.MODERATE), (35, L.HIGH),
-     (44.9, L.HIGH), (45, L.SEVERE), (54.9, L.SEVERE), (55, L.NO_TRAVEL), (80, L.NO_TRAVEL)],
+    [
+        (0, L.LOW),
+        (24.9, L.LOW),
+        (25, L.MODERATE),
+        (34.5, L.MODERATE),
+        (35, L.HIGH),
+        (44.9, L.HIGH),
+        (45, L.SEVERE),
+        (54.9, L.SEVERE),
+        (55, L.NO_TRAVEL),
+        (80, L.NO_TRAVEL),
+    ],
 )
 def test_wind_bands_light_load(wind, expected):
     assert assess(wx(wind=wind), load_lb=10_000).level == expected
@@ -19,8 +29,15 @@ def test_wind_bands_light_load(wind, expected):
 
 @pytest.mark.parametrize(
     "rain, expected",
-    [(0.09, L.LOW), (0.10, L.MODERATE), (0.25, L.HIGH), (0.49, L.HIGH),
-     (0.50, L.SEVERE), (1.00, L.SEVERE), (1.01, L.NO_TRAVEL)],
+    [
+        (0.09, L.LOW),
+        (0.10, L.MODERATE),
+        (0.25, L.HIGH),
+        (0.49, L.HIGH),
+        (0.50, L.SEVERE),
+        (1.00, L.SEVERE),
+        (1.01, L.NO_TRAVEL),
+    ],
 )
 def test_rain_bands(rain, expected):
     assert assess(wx(rain=rain), load_lb=10_000).level == expected

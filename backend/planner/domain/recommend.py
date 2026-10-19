@@ -105,9 +105,6 @@ def _explain(best: RouteMetrics, other: RouteMetrics, best_name: str, other_name
             if label == "No Travel miles" and a == 0:
                 return f"{best_name} avoids No Travel conditions ({other_name} has {fmt(b)})."
             if label == "travel time":
-                return (
-                    f"Weather risk is equivalent to {other_name}, and {best_name} is faster "
-                    f"({fmt(a)} vs {fmt(b)})."
-                )
+                return f"Weather risk is equivalent to {other_name}, and {best_name} is faster ({fmt(a)} vs {fmt(b)})."
             return f"{best_name} has less {label} than {other_name} ({fmt(a)} vs {fmt(b)})."
     return f"{best_name} ties with {other_name} on every criterion; shown first."

@@ -31,7 +31,13 @@ class Checkpoint:
 class RouteProfile:
     """A route polyline with cumulative miles and seconds at every vertex."""
 
-    def __init__(self, coords: list[Coord], seg_distances_m: list[float] | None, seg_durations_s: list[float] | None, total_duration_s: float):
+    def __init__(
+        self,
+        coords: list[Coord],
+        seg_distances_m: list[float] | None,
+        seg_durations_s: list[float] | None,
+        total_duration_s: float,
+    ):
         if len(coords) < 2:
             raise ValueError("A route needs at least two coordinates")
         self.coords = coords
